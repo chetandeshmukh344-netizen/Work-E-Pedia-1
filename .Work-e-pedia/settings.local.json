@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"D:\\\\SIH\\\\IEEE CIS\\\\claude 2\")",
+      "Bash(node --check app.js)"
+    ]
+  }
+}
