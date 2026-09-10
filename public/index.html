@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Work-e-pedia · Intern Monitor</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<!-- Glassmorphism: floating pastel gradient orbs for depth -->
+<div id="bg-orbs">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
+<div id="app"></div>
+
+<!-- Templates -->
+<template id="tpl-landing">
+  <div class="landing">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">W</div>
+        <div>
+          <h1>Work‑e‑pedia</h1>
+          <p class="tagline">Intern Monitoring & Attendance</p>
+        </div>
+      </div>
+    </header>
+    <main class="hero">
+      <div class="hero-text">
+        <h2>Welcome back, choose your portal</h2>
+        <p>Monitor interns with cryptographic key linking, geo‑fenced attendance and break intelligence.</p>
+        <ul class="bullets">
+          <li>🔐 Laptop‑bound cryptographic key (generated on first login)</li>
+          <li>📍 IP & location verification before marking present</li>
+          <li>⏱ Auto‑break after 30 min idle, 2 breaks/day, 1h each</li>
+          <li>📅 Monthly calendar with color codes &amp; late‑comer trends</li>
+        </ul>
+      </div>
+      <div class="portals">
+        <button class="portal mentor" data-go="mentor-login">
+          <div class="portal-icon">👨‍🏫</div>
+          <h3>Mentor Login</h3>
+          <p>Manage interns, set policies &amp; review calendars</p>
+        </button>
+        <button class="portal intern" data-go="intern-login">
+          <div class="portal-icon">🧑‍💻</div>
+          <h3>Intern Login</h3>
+          <p>Mark attendance &amp; track working hours</p>
+        </button>
+        <button class="portal college" data-go="college-login">
+          <div class="portal-icon">🎓</div>
+          <h3>College Login</h3>
+          <p>Manage mentors, view assignments &amp; track intern performance</p>
+        </button>
+      </div>
+    </main>
+    <footer class="foot">© 2026 Work‑e‑pedia · Built for SIH · IEEE CIS</footer>
+  </div>
+</template>
+
+<template id="tpl-mentor-login">
+  <div class="login-wrap">
+    <button class="back" data-go="landing">← Back</button>
+    <div class="card login-card">
+      <div class="role-badge mentor">👨‍🏫 Mentor</div>
+      <h2>Mentor Sign‑in</h2>
+      <form id="mentor-login-form">
+        <label>Username
+          <input name="username" required autocomplete="username" placeholder="e.g. drsmith" />
+        </label>
+        <label>Password
+          <input name="password" type="password" required autocomplete="current-password" placeholder="••••••••" />
+        </label>
+        <button class="primary" type="submit">Sign in</button>
+        <p class="muted small">Mentor accounts are created by your college.</p>
+      </form>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-intern-login">
+  <div class="login-wrap">
+    <button class="back" data-go="landing">← Back</button>
+    <div class="card login-card">
+      <div class="role-badge intern">🧑‍💻 Intern</div>
+      <h2>Intern Sign‑in</h2>
+      <form id="intern-login-form">
+        <label>Username
+          <input name="username" required autocomplete="username" placeholder="username given by mentor" />
+        </label>
+        <label>Password
+          <input name="password" type="password" required autocomplete="current-password" />
+        </label>
+        <button class="primary" type="submit">Continue</button>
+        <p class="muted small">Need 3‑step verification before attendance is marked.</p>
+      </form>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-college-login">
+  <div class="login-wrap">
+    <button class="back" data-go="landing">← Back</button>
+    <div class="card login-card">
+      <div class="role-badge college">🎓 College</div>
+      <h2>College Sign‑in</h2>
+      <form id="college-login-form">
+        <label>Username
+          <input name="username" required autocomplete="username" placeholder="e.g. admissions" />
+        </label>
+        <label>Password
+          <input name="password" type="password" required autocomplete="current-password" />
+        </label>
+        <button class="primary" type="submit">Sign in</button>
+        <p class="muted small">First time? Default college: <code>college / college123</code></p>
+      </form>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-mentor-dashboard">
+  <div class="dash">
+    <aside class="side">
+      <div class="brand small">
+        <div class="logo sm">W</div>
+        <div>
+          <h3>Work‑e‑pedia</h3>
+          <p class="muted small">Mentor Console</p>
+        </div>
+      </div>
+      <nav>
+        <button data-tab="overview" class="active">📊 Overview</button>
+        <button data-tab="interns">👥 Interns</button>
+        <button data-tab="add">➕ Add Intern</button>
+        <button data-tab="calendar">📅 Calendar</button>
+        <button data-tab="alerts">🔔 Notifications <span id="alert-count" class="badge"></span></button>
+        <button data-tab="settings">⚙️ Policies</button>
+      </nav>
+      <div class="side-foot">
+        <div class="who" id="mentor-who"></div>
+        <button id="logout-btn" class="ghost">Sign out</button>
+      </div>
+    </aside>
+    <main class="main" id="mentor-main"></main>
+  </div>
+</template>
+
+<template id="tpl-intern-dashboard">
+  <div class="dash">
+    <aside class="side">
+      <div class="brand small">
+        <div class="logo sm">W</div>
+        <div>
+          <h3>Work‑e‑pedia</h3>
+          <p class="muted small">Intern Console</p>
+        </div>
+      </div>
+      <div class="status-card" id="intern-status-card"></div>
+      <nav>
+        <button data-tab="attendance" class="active">🟢 Attendance</button>
+        <button data-tab="calendar">📅 My Calendar</button>
+        <button data-tab="breaks">☕ Breaks</button>
+        <button data-tab="profile">👤 Profile</button>
+      </nav>
+      <div class="side-foot">
+        <div class="who" id="intern-who"></div>
+        <button id="logout-btn" class="ghost">Sign out</button>
+      </div>
+    </aside>
+    <main class="main" id="intern-main"></main>
+  </div>
+</template>
+
+<template id="tpl-college-dashboard">
+  <div class="dash">
+    <aside class="side">
+      <div class="brand small">
+        <div class="logo sm">W</div>
+        <div>
+          <h3>Work‑e‑pedia</h3>
+          <p class="muted small">College Console</p>
+        </div>
+      </div>
+      <nav>
+        <button data-tab="overview" class="active">📊 Overview</button>
+        <button data-tab="mentors">👨‍🏫 Mentors</button>
+        <button data-tab="interns">👥 Interns</button>
+        <button data-tab="add">➕ Add Mentor</button>
+        <button data-tab="performance">📈 Performance</button>
+      </nav>
+      <div class="side-foot">
+        <div class="who" id="college-who"></div>
+        <button id="logout-btn" class="ghost">Sign out</button>
+      </div>
+    </aside>
+    <main class="main" id="college-main"></main>
+  </div>
+</template>
+
+<template id="tpl-attendance-flow">
+  <section class="flow">
+    <h2>3‑Step Attendance</h2>
+    <p class="muted">All three checks must pass to mark you present for today.</p>
+    <ol class="steps">
+      <li class="step" data-step="1">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Cryptographic Key</h4>
+          <p class="muted small">Laptop‑bound key generated on first login.</p>
+          <div class="step-action" data-action="key"></div>
+        </div>
+      </li>
+      <li class="step" data-step="2">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Wi‑Fi IP Check</h4>
+          <p class="muted small">Verify your current IP matches the mentor‑set IP.</p>
+          <div class="step-action" data-action="ip"></div>
+        </div>
+      </li>
+      <li class="step" data-step="3">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Location Check</h4>
+          <p class="muted small">Verify your location matches the mentor‑set area.</p>
+          <div class="step-action" data-action="loc"></div>
+        </div>
+      </li>
+    </ol>
+    <div id="flow-result"></div>
+  </section>
+</template>
+
+<template id="tpl-intern-calendar">
+  <section>
+    <div class="row between">
+      <h2 id="cal-title"></h2>
+      <div class="row gap">
+        <button data-cal-nav="-1" class="ghost">‹ Prev</button>
+        <button data-cal-nav="0" class="ghost">Today</button>
+        <button data-cal-nav="1" class="ghost">Next ›</button>
+      </div>
+    </div>
+    <div class="legend">
+      <span class="dot present"></span> Present
+      <span class="dot absent"></span> Absent
+      <span class="dot break"></span> On Break
+      <span class="dot future"></span> Future
+    </div>
+    <div class="calendar" id="cal-grid"></div>
+  </section>
+</template>
+
+<script src="app.js"></script>
+</body>
+</html>
